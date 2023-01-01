@@ -10,14 +10,14 @@ export const ProfileOrders = () => {
 
     useEffect(() => {
         dispatch({ type: WS_CONNECTION_START_AUTH });
-        return dispatch({ type: WS_CONNECTION_CLOSED_AUTH });
+        return () => dispatch({ type: WS_CONNECTION_CLOSED_AUTH });
     }, [dispatch]);
 
     return (
         <ul className={`${styles.list} pr-4 ml-15`}>
             {
                 ordersInfo
-                    ? ordersInfo.orders.map(el => <FeedItem hasStatus={true} key={el._id} item={el} />)
+                    ? ordersInfo.orders?.map(el => <FeedItem hasStatus={true} key={el._id} item={el} />)
                     : <p className="loading text text_type_main-large">...</p>
             }
         </ul>

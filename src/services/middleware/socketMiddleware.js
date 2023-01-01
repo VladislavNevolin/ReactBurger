@@ -1,4 +1,5 @@
 import { getCookie } from "../../utils/utils";
+import { getToken } from "../actions/auth";
 
 export const socketMiddleware = (wsUrl, wsActions, isAuth) => {
     return store => {
@@ -19,8 +20,8 @@ export const socketMiddleware = (wsUrl, wsActions, isAuth) => {
 
             if (type === wsInit) {
                 socket = !isAuth
-                    ? new WebSocket(`${wsUrl}/all`)
-                    : new WebSocket(`${wsUrl}?token=${getCookie('accessToken')?.replace('Bearer ', '')}`)
+                    ? new WebSocket(`${wsUrl}${payload}`)
+                    : new WebSocket(`${wsUrl}?token=${token}`)
             }
 
             if (socket) {
@@ -35,6 +36,9 @@ export const socketMiddleware = (wsUrl, wsActions, isAuth) => {
                 socket.onmessage = event => {
                     const { data } = event;
                     const { success, ...info } = JSON.parse(data);
+                    if(info.message === 'Invalid or missing token' && !!getCookie('refreshToken')) {
+                        dispatch(getToken());
+                    }
                     dispatch({ type: onMessage, payload: info });
                 };
 

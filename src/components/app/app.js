@@ -15,7 +15,7 @@ import IngredientDetails from '../ingredient-details/ingredient-details';
 import Modal from '../modal/modal';
 import { FeedPage } from '../../pages/feed/feed';
 import { OrderInfo } from '../order-info/order-info';
-
+import { deleteCookie } from '../../utils/utils';
 
 export default function App() {
     const dispatch = useDispatch();
@@ -23,7 +23,17 @@ export default function App() {
     const location = useLocation();
     const background = location.state?.bg;
     const num = location.state?.num;
-    const profileExact = location.state === null ? false : true;
+    const profileExact = () => {
+        if(location.state === null || location.pathname === '/profile/orders') {
+            return false
+        }
+        else if(location.state === undefined) {
+            return true
+        }
+        else {
+            return false
+        }
+    }
 
     function handleCloseModal() {
         history.goBack();
@@ -50,7 +60,7 @@ export default function App() {
                 <Route path="/reset-password" exact={true}>
                     <ResetPwPage />
                 </Route>
-                <ProtectedRoute path="/profile" exact={profileExact}>
+                <ProtectedRoute path="/profile" exact={profileExact()}>
                     <ProfilePage />
                 </ProtectedRoute>
                 <Route path="/ingredients/:id" exact={true}>
